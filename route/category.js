@@ -28,7 +28,7 @@ class Category {
             let valid = va.validate(req.body, schema);
             if(valid.valid) {
                 const db = await utils.db();
-                db.collection('category').insert(req.body, () => {});
+                db.collection('category').insert(req.body, (v) => {console.log(v)});
                 res.json({ status: "successful" });
             } else {
                 res.json({ status: "error", data: valid.errors[0].stack });

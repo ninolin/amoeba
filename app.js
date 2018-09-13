@@ -1,29 +1,22 @@
-const express = require('express'),
-      bodyParser = require('body-parser');
+var app = require('express')();
+var http = require('http').Server(app);
+var bodyParser = require('body-parser');
 
-var app = express();
-app.use(bodyParser.json()); // for parsing application/json
-app.use(express.static('public'));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 const category = require('./route/category');
+const account = require('./route/account');
 
-var requestTime = function (req, res, next) {
-    req.requestTime = Date.now();
-    next();
-};
-
-var myLogger = function (req, res, next) {
-    console.log(req.body);
-    next();
-};
-
-app.use(requestTime);
-app.use(myLogger);
-
+app.use(bodyParser.json());
 app.use('/',category.list());
 app.use('/',category.create());
 app.use('/',category.update());
 app.use('/',category.delete());
+app.use('/',account.list());
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');

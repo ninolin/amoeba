@@ -10,17 +10,18 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - mongo
       - mysql
+  #   - mongo
 
-  mongo:
-    image: mongo
-    container_name: mongo
-    build: .
-    environment:
-      NODE_ENV: production
-    ports:
-      - 27017:27017
+
+  # mongo:
+  #   image: mongo
+  #   container_name: mongo
+  #   build: .
+  #   environment:
+  #     NODE_ENV: production
+  #   ports:
+  #     - 27017:27017
 
   mysql:
     image: mysql:8.0.12
@@ -34,16 +35,3 @@ services:
       MYSQL_PASSWORD: amoeba
     ports:
       - 3306:3306
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    links:
-      - mysql
-    ports:
-      - 8088:80
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-    depends_on:
-      - mysql

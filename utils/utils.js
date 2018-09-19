@@ -1,5 +1,10 @@
-const mongodb = require('mongodb').MongoClient;
+//const mongodb = require('mongodb').MongoClient;
 const mysql = require('mysql');
+const toml = require('toml');
+const fs = require('fs');
+const config = fs.readFileSync('config.toml', 'utf8');
+
+
 var Utils = class {
 
 	static mongodb () {
@@ -15,28 +20,37 @@ var Utils = class {
         })
     }
     
-    static mysqldb_con () {
+    static mysqldb () {
         return new Promise((resolve, reject) => {
-            mysql.createConnection({
-                host: "mysql",
-                user: "amoeba",
-                password: "amoeba"
+            var connection = mysql.createConnection({
+                host: config.database.host,
+                port: config.database.port,
+                user: config.database.user,
+                password: config.database.password,
+                database: config.database.database
+            });
+
+            connection.connect(function(err) {
+                if (err) {
+                    reject('connect error');
+                } else {
+                    resolve(connection);
+                }
             });
         })
     }
-    
-    static query(sql, arg) {
+
+    static query (sql) {
         return new Promise((resolve, reject) => {
-            console.log(this.mysqldb_con());
-            this.mysqldb_con().then(v => {
-                return v.query(
-                    sql,
-                    arg,
-                    (err, rows, fields) => {
-                      if (err) reject(err);
-                      else resolve(rows);
+            this.mysqldb().then(v => {
+                v.query(sql, function (err, result) {
+                    if (err) {
+                        reject('connect error');
+                    } else {
+                        console.log(result);
+                        resolve(result);
                     }
-                );
+                });
             })
         })
     }

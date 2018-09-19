@@ -1,6 +1,6 @@
-# BlockScanner Default Config
+# Amoeba Default Config
 
-title = "BlockScanner"
+title = "Amoeba"
 
 [base]
 folder = "chaindata"
@@ -12,11 +12,16 @@ hostname = "127.0.0.1"
 port = 8545
 path = "/"
 
-[database]
-protocol = "mongodb:"
-hostname = "127.0.0.1"
-port = 27017
-db = "TEST"
-prefix = "BS_"
-user = "BC2"
+[mysql]
+host = "127.0.0.1"
+port = 3306
+user = "root"
 password = "password"
+database = "amoeba";
+
+[mongo]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = "password"
+database = "amoeba";

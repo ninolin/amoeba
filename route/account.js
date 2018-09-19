@@ -1,7 +1,6 @@
 const utils = require('../utils/utils');
 const express = require('express');
 const router = express.Router();
-const assert = require('assert');
 const validator = require('jsonschema').Validator;
 const va = new validator();
 const schema = {

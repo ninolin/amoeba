@@ -2,8 +2,7 @@
 const mysql = require('mysql');
 const toml = require('toml');
 const fs = require('fs');
-const config = fs.readFileSync('config.toml', 'utf8');
-
+const config = toml.parse(fs.readFileSync('config.toml', 'utf8'));
 
 var Utils = class {
 
@@ -22,12 +21,13 @@ var Utils = class {
     
     static mysqldb () {
         return new Promise((resolve, reject) => {
+            console.log(config.mysql);
             var connection = mysql.createConnection({
-                host: config.database.host,
-                port: config.database.port,
-                user: config.database.user,
-                password: config.database.password,
-                database: config.database.database
+                host: config.mysql.host,
+                port: config.mysql.port,
+                user: config.mysql.user,
+                password: config.mysql.password,
+                database: config.mysql.database
             });
 
             connection.connect(function(err) {
@@ -45,7 +45,7 @@ var Utils = class {
             this.mysqldb().then(v => {
                 v.query(sql, function (err, result) {
                     if (err) {
-                        reject('connect error');
+                        reject(err);
                     } else {
                         console.log(result);
                         resolve(result);

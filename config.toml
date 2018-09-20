@@ -13,11 +13,11 @@ port = 8545
 path = "/"
 
 [mysql]
-host = ""
-port = 
-user = ""
-password = ""
-database = ""
+host = "61.66.218.248"
+port = 8545
+user = "root"
+password = "123456"
+database = "ioneit"
 
 [mongo]
 host = "127.0.0.1"

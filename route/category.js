@@ -1,62 +1,62 @@
 const utils = require('../utils/utils');
 const express = require('express');
 const router = express.Router();
-const assert = require('assert');
 const validator = require('jsonschema').Validator;
 const va = new validator();
-const schema = {
-    "type": "object", 
-    "properties": {
-        "name": {"type": "string"},
-        "age": {"type": "integer"}
-    }, 
-    "required": "name"
-};
-
-class Category {
-    
-    static list() {
-		return router.get('/category', async function(req, res) {
-            const db = await utils.db();
-            const category = await db.collection('category').find({}).toArray();
-            res.json({ status: "successful", data: category });
-        });
+class Schema {
+    get getschema() {
+        return {
+            "type": "object", 
+            "properties": {
+                "name": {"type": "string"}
+            }, 
+            "required": [
+                "name"
+            ]
+        }
     }
-    
-    static create() {
-        return router.post('/category', async function(req, res) {
-            let valid = va.validate(req.body, schema);
-            if(valid.valid) {
-                const db = await utils.db();
-                db.collection('category').insert(req.body, (v) => {console.log(v)});
-                res.json({ status: "successful" });
-            } else {
-                res.json({ status: "error", data: valid.errors[0].stack });
-            }
-        });
-    }
+}
 
-    static delete() {
-        return router.delete('/category/:name', async function(req, res) {
-            const db = await utils.db();
-            console.log(req.params.name);
-            db.collection('category').remove({ 'name': req.params.name });
-            res.json({ status: "successful" });
-        });
-    }
+//list 
+router.get('/', async function(req, res) {
+    const data = await utils.query('SELECT * FROM CATEGORY');
+    res.json({ status: "successful", data: data });
+});
 
-    static update() {
-        return router.put('/category/:name', async function(req, res) {
-            let valid = va.validate(req.body, schema);
-            if(valid.valid) {
-                const db = await utils.db();
-                db.collection('category').findAndModify({ 'name': req.params.name }, {}, {$set: { 'name': req.body.name }})
-                res.json({ status: "successful" });
-            } else {
-                res.json({ status: "error", data: valid.errors[0].stack });
-            }
-        });
+//add
+router.post('/', async function(req, res) {
+    const valid = va.validate(req.body, new Schema().getschema);
+    if(valid.valid) {
+        const data = await utils.query('INSERT INTO CATEGORY (NAME) VALUES ("'+req.body.name+'")');
+        res.json({ status: "successful"});
+    } else {
+        res.json({ status: "error", data: valid.errors[0].stack });
     }
-};
+});
 
-module.exports = Category;
+//update
+router.post('/:id', async function(req, res) {
+    //增加api資料必要性檢查
+    let schema = new Schema().getschema;
+    schema.required.push("name");
+    const valid = va.validate(req.body, schema);
+    if(valid.valid) {
+        const sql = ' UPDATE CATEGORY SET ' +
+                    '   NAME = "'+req.body.name+'"'+
+                    ' WHERE ' + 
+                    '   ID = '+req.params.id;
+        const data = await utils.query(sql);
+        res.json({ status: "successful"});
+    } else {
+        res.json({ status: "error", data: valid.errors[0].stack });
+    }
+});
+
+//delete
+router.delete('/:id', async function(req, res) {
+    const sql = ' DELETE FROM CATEGORY WHERE ID = '+req.params.id;
+    const data = await utils.query(sql);
+    res.json({ status: "successful"});
+});
+
+module.exports = router;

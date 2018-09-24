@@ -8,16 +8,9 @@ app.use(function(req, res, next) {
     next();
 });
 
-const category = require('./route/category');
-const account = require('./route/account');
-
 app.use(bodyParser.json());
-// app.use('/',category.list());
-// app.use('/',category.create());
-// app.use('/',category.update());
-// app.use('/',category.delete());
-app.use('/',account.list());
-app.use('/',account.add());
+app.use('/category',require('./route/category'));
+app.use('/user',require('./route/user'));
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');

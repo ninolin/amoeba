@@ -1,8 +1,14 @@
 //const mongodb = require('mongodb').MongoClient;
 const mysql = require('mysql');
 const toml = require('toml');
+const log4js = require('log4js');
 const fs = require('fs');
 const config = toml.parse(fs.readFileSync('config.toml', 'utf8'));
+
+log4js.configure({
+    appenders: { amoeba: { type: 'file', filename: 'log/amoeba.log' } },
+    categories: { default: { appenders: ['amoeba'], level: 'error' } }
+});
 
 var Utils = class {
 
@@ -21,7 +27,6 @@ var Utils = class {
     
     static mysqldb () {
         return new Promise((resolve, reject) => {
-            console.log(config.mysql);
             var connection = mysql.createConnection({
                 host: config.mysql.host,
                 port: config.mysql.port,
@@ -51,8 +56,12 @@ var Utils = class {
                         resolve(result);
                     }
                 });
-            })
+            }).catch(e => {this.logger().error('[utils] ' + e)})
         })
+    }
+
+    static logger () {
+        return log4js.getLogger('amoeba')
     }
 };
 
